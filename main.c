@@ -3,6 +3,7 @@
 //
 
 #include <stdio.h>
+#include <fuse.h>
 
 int main() {
     printf("Hello world!\n");
