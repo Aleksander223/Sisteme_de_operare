@@ -7,13 +7,30 @@
 #include <filesystem>
 #include <string>
 #include <vector>
+#include <fstream>
 
 namespace proc {
+
+    Tree ProcessTree;
+
     class ProcessScraper {
     private:
         const std::string path = "/proc";
 
-        std::vector< unsigned int > procList;
+        std::vector<int> procList;
+        std::vector<int> parentList;
+
+        int getParentID (int pid) {
+            int ppid;
+
+            // status file
+            std::string statPath = "";
+            statPath += "/proc/" + std::to_string(pid) + "/status";
+
+            std::ifstream stat(statPath);
+
+            return ppid;
+        }
     public:
         void scrapeProcesses() {
             for (const auto & entry : std::filesystem::directory_iterator(path)) {
@@ -22,6 +39,7 @@ namespace proc {
                     int processID = std::stoi(fileName);
 
                     procList.push_back(processID);
+                    parentList.push_back(getParentID(processID));
                 }
             }
         }
