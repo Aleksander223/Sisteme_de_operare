@@ -4,20 +4,10 @@
 
 #include <iostream>
 #include <fuse.h>
-#include "tree.cpp"
+#include "proc.cpp"
 
 int main() {
-    Tree t;
-
-    t.addRoot(1);
-    t.addNode(2, 1);
-    t.addNode(3, 1);
-    t.addNode(4, 3);
-
-    TreeNode* tmp = t.find(4);
-
-    if (tmp) {
-        std::cout<<tmp->pid<<std::endl;
-    }
+    proc::ProcessScraper ps;
+    ps.printProcesses();
     return 0;
 }
