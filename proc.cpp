@@ -45,7 +45,7 @@ namespace proc {
         void scrapeProcesses() {
             for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
                 std::string fileName = entry.path().filename();
-                if (fileName[0] >= '0' && fileName[0] <= '9') {
+                if (fileName[0] > '0' && fileName[0] <= '9') {
                     int processID = std::stoi(fileName);
 
                     parentDict[getParentID(processID)].push_back(processID);
