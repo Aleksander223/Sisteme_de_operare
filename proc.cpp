@@ -5,7 +5,6 @@
 
 */
 
-#include "tree.cpp"
 #include <iostream>
 #include <experimental/filesystem>
 #include <string>
@@ -14,8 +13,6 @@
 #include <sstream>
 #include <map>
 namespace proc {
-
-    Tree ProcessTree;
 
     class ProcessScraper {
     private:
