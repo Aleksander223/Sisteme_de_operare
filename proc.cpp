@@ -69,7 +69,31 @@ namespace proc {
                 std::experimental::filesystem::path frunza(current_path + "status.txt");
                 std::experimental::filesystem::create_directories(frunza.parent_path()); // creem fisierul din directorul frunza
                 std::ofstream fout(frunza);
-                fout << "Statusul lui:\t" << ppid << "\n" ;  // scriem in acel fisier
+                fout << "Statusul lui:\t" << ppid << "\n\n\tStatus:\n" ;  // scriem in acel fisier
+                std::ifstream status("/proc/" + ppid + "/status");
+                std::string line;
+                while(std::getline(status, line))
+                        fout<<line<<"\n";
+                status.close();
+
+                fout << "\n\n\tLimits:\n";
+                std::ifstream limits("/proc/" + ppid + "/limits");
+                while(std::getline(limits, line))
+                        fout<<line<<"\n";
+                limits.close();
+
+                fout << "\n\n\tStat:\n";
+                std::ifstream stat("/proc/" + ppid + "/stat");
+                while(std::getline(stat, line))
+                        fout<<line<<"\n";
+                stat.close();
+
+                fout << "\n\n\tSched:\n";
+                std::ifstream sched("/proc/" + ppid + "/sched");
+                while(std::getline(sched, line))
+                        fout<<line<<"\n";
+                sched.close();
+
                 fout.close();
             }
         }
