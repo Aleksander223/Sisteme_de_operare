@@ -1,10 +1,3 @@
-/*
-  Gets the processes from /proc and hierarchizes them using a general tree
-  din -> attr/current, attr/display, cmdline, comm, gid_map , sessionid, uid_map, cwd
-      -> **status**, **limits**, **stat** (din astea doar esentialul)
-
-*/
-
 #include <iostream>
 #include <experimental/filesystem>
 #include <string>
@@ -17,10 +10,7 @@ namespace proc {
     class ProcessScraper {
     private:
         const std::string path = "/proc";
-
-
         std::map<std::string, std::vector<int>> parentDict;// un PPid -> vector de Pid asociati lui
-
         std::string getParentID (int pid) {
             std::string ppid; // PPid se afla in /proc/pid/status la randul ce incepe cu PPid -> linia 7
 
@@ -30,19 +20,22 @@ namespace proc {
 
             std::ifstream fin(statPath);
             std::string line;
-            for(unsigned i=0;i<7;i++)
-                std::getline(fin,line);
+            for(unsigned i=0; i<7; i++)
+                std::getline(fin, line);
             fin.close();
-            ppid = line.substr(line.find("\t")+1);
+            ppid = line.substr(line.find("\t") + 1);
             return ppid;
         }
     public:
+        ProcessScraper() {
+            scrapeProcesses();
+        }
+
         void scrapeProcesses() {
             for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
                 std::string fileName = entry.path().filename();
                 if (fileName[0] > '0' && fileName[0] <= '9') {
                     int processID = std::stoi(fileName);
-
                     parentDict[getParentID(processID)].push_back(processID);
                 }
             }
@@ -64,24 +57,22 @@ namespace proc {
         }
 
         void createPSTree(std::string ppid, std::string current_path) {
-
             if(parentDict.find(ppid) != parentDict.end())
-                for (auto it: parentDict[ppid])
-                {
+                for (auto it: parentDict[ppid]) {
                     std::string new_path = current_path  + std::to_string(it) + "/";
                     std::experimental::filesystem::create_directory(new_path);
                     createPSTree(std::to_string(it), new_path);
                 }
-            else
-            {
+            else {
                 // nu il gaseste deci e frunza
                 // daca e frunza trebuie sa scriem in el un fisier status 
+                std::experimental::filesystem::path frunza(current_path + "status.txt");
+                std::experimental::filesystem::create_directories(frunza.parent_path()); // creem fisierul din directorul frunza
+                std::ofstream fout(frunza);
+                fout << "Statusul lui:\t" << ppid << "\n" ;  // scriem in acel fisier
+                fout.close();
             }
-
         }
 
-        ProcessScraper() {
-            scrapeProcesses();
-        }
     };
 }
