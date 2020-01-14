@@ -66,9 +66,7 @@ namespace proc {
             else {
                 // nu il gaseste deci e frunza
                 // daca e frunza trebuie sa scriem in el un fisier status 
-                std::experimental::filesystem::path frunza(current_path + "status.txt");
-                std::experimental::filesystem::create_directories(frunza.parent_path()); // creem fisierul din directorul frunza
-                std::ofstream fout(frunza);
+                std::ofstream fout(current_path + "status.txt");
                 fout << "Statusul lui:\t" << ppid << "\n\n\tStatus:\n" ;  // scriem in acel fisier
                 std::ifstream status("/proc/" + ppid + "/status");
                 std::string line;
