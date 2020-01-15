@@ -11,7 +11,7 @@ static int __init kproc_init(void) {
     return 0;
 }
 
-static int __exit krpoc_exit(void) {
+static void __exit krpoc_exit(void) {
     printk(KERN_LOG "Exit test\n");
 }
 
