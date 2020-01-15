@@ -92,12 +92,12 @@ namespace proc {
             scrapeProcesses();
             std::cout<<"Nr of procc "<<processNo<<"\n";
 
-            processThreads = new pthread_t[60*processNo];   /// ar trebui facut un map, vectorul asta e prea mare pt a cupride id urile si sunt doar vreo 250 in medie
-            processThreadsPaths = new struct Parameters[100*processNo];
+            processThreads = new pthread_t[6000*processNo];   /// ar trebui facut un map, vectorul asta e prea mare pt a cupride id urile si sunt doar vreo 250 in medie
+            processThreadsPaths = new struct Parameters[100000*processNo];
 
             filesNo = processNo;
-            filesThreads = new pthread_t[60*processNo];
-            filesThreadsPaths = new struct Parameters[100*processNo];
+            filesThreads = new pthread_t[6000*processNo];
+            filesThreadsPaths = new struct Parameters[100000*processNo];
         }
 
         void scrapeProcesses() {
