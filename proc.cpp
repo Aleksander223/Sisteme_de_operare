@@ -19,7 +19,6 @@ namespace proc {
     };
 
     void* make_directory(void *argv){
-        //std::cout<<"\nIn thread directory\n";
         Parameters *aux = (Parameters*)argv;
         std::experimental::filesystem::path p(aux->path);
 
@@ -32,7 +31,6 @@ namespace proc {
     }
 
     void* make_directories(void *argv){
-        ///std::cout<<"\nIn thread directories\n";
         Parameters *aux = (Parameters*)argv;
 
         std::experimental::filesystem::path p(aux->path);
@@ -45,30 +43,25 @@ namespace proc {
         fout << "Statusul lui:\t" << aux->ppid << "\n\n\tStatus:\n" ;  // scriem in acel fisier
         std::ifstream status("/proc/" + aux->ppid + "/status");
         std::string line;
-        while(std::getline(status, line))
-                fout<<line<<"\n";
+        while(std::getline(status, line)) fout<<line<<"\n";
         status.close();
 
         fout << "\n\n\tLimits:\n";
         std::ifstream limits("/proc/" + aux->ppid + "/limits");
-        while(std::getline(limits, line))
-                fout<<line<<"\n";
+        while(std::getline(limits, line)) fout<<line<<"\n";
         limits.close();
 
         fout << "\n\n\tStat:\n";
         std::ifstream stat("/proc/" + aux->ppid + "/stat");
-        while(std::getline(stat, line))
-                fout<<line<<"\n";
+        while(std::getline(stat, line)) fout<<line<<"\n";
         stat.close();
 
         fout << "\n\n\tSched:\n";
         std::ifstream sched("/proc/" + aux->ppid + "/sched");
-        while(std::getline(sched, line))
-                fout<<line<<"\n";
+        while(std::getline(sched, line)) fout<<line<<"\n";
         sched.close();
 
         fout.close();
-
         return (void*)true;
     }
 
@@ -81,8 +74,7 @@ namespace proc {
         Parameters *processThreadsPaths;
         std::map<std::string, std::vector<int>> parentDict;// un PPid -> vector de Pid asociati lui
         std::string getParentID (int pid) {
-            std::string ppid; // PPid se afla in /proc/pid/status la randul ce incepe cu PPid -> linia 7
-
+            std::string ppid; 
             // status file
             std::string statPath = "";
             statPath += "/proc/" + std::to_string(pid) + "/status";
@@ -98,7 +90,6 @@ namespace proc {
     public:
         ProcessScraper() {
             scrapeProcesses();
-
             std::cout<<"Nr of procc "<<processNo<<"\n";
 
             processThreads = new pthread_t[60*processNo];   /// ar trebui facut un map, vectorul asta e prea mare pt a cupride id urile si sunt doar vreo 250 in medie
@@ -158,49 +149,18 @@ namespace proc {
                     processThreadsPaths[it].ppid = ppid;
 
                     pthread_create(&processThreads[it], NULL, make_directory, &processThreadsPaths[it]);
-
                     new_path = new_path + "/";
 
-                    //std::experimental::filesystem::create_directory(new_path);
                     createPSTree(std::to_string(it), new_path);
 
                 }
             else {
-                // nu il gaseste deci e frunza
-                // daca e frunza trebuie sa scriem in el un fisier status
+                // nu il gaseste deci e frunza -> trebuie sa scriem in el un fisier status
 
                 filesThreadsPaths[std::stoi(ppid)].path = current_path + "status.txt";
                 filesThreadsPaths[std::stoi(ppid)].ppid = ppid;
 
                 pthread_create(&filesThreads[std::stoi(ppid)], NULL, make_directories, &filesThreadsPaths[std::stoi(ppid)]);
- 
-                // std::ofstream fout(current_path + "status.txt");
-                // fout << "Statusul lui:\t" << ppid << "\n\n\tStatus:\n" ;  // scriem in acel fisier
-                // std::ifstream status("/proc/" + ppid + "/status");
-                // std::string line;
-                // while(std::getline(status, line))
-                //         fout<<line<<"\n";
-                // status.close();
-
-                // fout << "\n\n\tLimits:\n";
-                // std::ifstream limits("/proc/" + ppid + "/limits");
-                // while(std::getline(limits, line))
-                //         fout<<line<<"\n";
-                // limits.close();
-
-                // fout << "\n\n\tStat:\n";
-                // std::ifstream stat("/proc/" + ppid + "/stat");
-                // while(std::getline(stat, line))
-                //         fout<<line<<"\n";
-                // stat.close();
-
-                // fout << "\n\n\tSched:\n";
-                // std::ifstream sched("/proc/" + ppid + "/sched");
-                // while(std::getline(sched, line))
-                //         fout<<line<<"\n";
-                // sched.close();
-
-                // fout.close();
             }
         }
 
