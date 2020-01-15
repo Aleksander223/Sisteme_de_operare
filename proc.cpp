@@ -15,7 +15,7 @@ namespace proc {
 
     struct Parameters{
 	    std::string path = " ";
-        std::string ppid =" ";
+        std::string ppid = " ";
     };
 
     void* make_directory(void *argv){
@@ -68,7 +68,7 @@ namespace proc {
     class ProcessScraper {
     private:
         const std::string path = "/proc";
-        int processNo = 1, filesNo;
+        int processNo = 1, processIndex, fileIndex;
         pthread_t *processThreads, *filesThreads;
         Parameters *filesThreadsPaths;
         Parameters *processThreadsPaths;
@@ -92,12 +92,13 @@ namespace proc {
             scrapeProcesses();
             std::cout<<"Nr of procc "<<processNo<<"\n";
 
-            processThreads = new pthread_t[6000*processNo];   /// ar trebui facut un map, vectorul asta e prea mare pt a cupride id urile si sunt doar vreo 250 in medie
-            processThreadsPaths = new struct Parameters[100000*processNo];
+            processThreads = new pthread_t[processNo];
+            processThreadsPaths = new struct Parameters[processNo];
 
-            filesNo = processNo;
-            filesThreads = new pthread_t[6000*processNo];
-            filesThreadsPaths = new struct Parameters[100000*processNo];
+            processIndex = processNo - 1;
+            fileIndex = processNo - 1;
+            filesThreads = new pthread_t[processNo];
+            filesThreadsPaths = new struct Parameters[processNo];
         }
 
         void scrapeProcesses() {
@@ -120,17 +121,19 @@ namespace proc {
             //            std::cout<<it2<<" ";
             //    std::cout<<"\n";
             //    }
-            std::experimental::filesystem::remove_all("./bin/0/");          // stergem tot ce era inainte
-            std::experimental::filesystem::create_directory("./bin/0/");    // creem radacina
+            std::experimental::filesystem::remove_all("./bin/0");          // stergem tot ce era inainte
+            std::experimental::filesystem::create_directory("./bin/0");    // cream radacina
             createPSTree("0","./bin/0/");                                   // recursiv toti fii, nepotii etc
-
-            for(unsigned i = 1; i <= processNo; i++){
+            for(unsigned i = processNo - 1; i > processIndex; i--){
                 void *rez;
 
                 if(pthread_join(processThreads[i], &rez)){
                     perror(NULL);
                     return errno;
                 }
+            }
+            for(unsigned i = processNo - 1; i > fileIndex; i--){
+                void *rez;
 
                 if(pthread_join(filesThreads[i], &rez)){
                     perror(NULL);
@@ -145,22 +148,23 @@ namespace proc {
                 for (auto it: parentDict[ppid]) {
 
                     std::string new_path = current_path  + std::to_string(it);
-                    processThreadsPaths[it].path = new_path;
-                    processThreadsPaths[it].ppid = ppid;
+                    processThreadsPaths[processIndex].path = new_path;
+                    processThreadsPaths[processIndex].ppid = ppid;
 
-                    pthread_create(&processThreads[it], NULL, make_directory, &processThreadsPaths[it]);
+                    pthread_create(&processThreads[processIndex], NULL, make_directory, &processThreadsPaths[processIndex]);
                     new_path = new_path + "/";
-
+                    processIndex --;
                     createPSTree(std::to_string(it), new_path);
 
                 }
             else {
                 // nu il gaseste deci e frunza -> trebuie sa scriem in el un fisier status
 
-                filesThreadsPaths[std::stoi(ppid)].path = current_path + "status.txt";
-                filesThreadsPaths[std::stoi(ppid)].ppid = ppid;
+                filesThreadsPaths[fileIndex].path = current_path + "status.txt";
+                filesThreadsPaths[fileIndex].ppid = ppid;
 
-                pthread_create(&filesThreads[std::stoi(ppid)], NULL, make_directories, &filesThreadsPaths[std::stoi(ppid)]);
+                pthread_create(&filesThreads[fileIndex], NULL, make_directories, &filesThreadsPaths[fileIndex]);
+                fileIndex --;
             }
         }
 
