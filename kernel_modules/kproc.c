@@ -7,13 +7,13 @@
 #include <linux/kernel.h>
 
 static int __init kproc_init(void) {
-    printk(KERN_LOG "Test\n");
+    printk("Test\n");
     return 0;
 }
 
-static void __exit krpoc_exit(void) {
-    printk(KERN_LOG "Exit test\n");
+static void __exit kproc_exit(void) {
+    printk("Exit test\n");
 }
 
 module_init(kproc_init);
-moduke_exit(kproc_exit);
+module_exit(kproc_exit);
