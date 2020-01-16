@@ -108,18 +108,18 @@ static int do_readdir( const char *path, void *buffer, fuse_fill_dir_t filler, o
 	filler( buffer, ".", NULL, 0 ); // Current Directory
 	filler( buffer, "..", NULL, 0 ); // Parent Directory
 
-	if ( strcmp( path, "/" ) == 0 ) // If the user is trying to show the files/directories of the root directory show the following
-	{
-		printf("Update!\n");
+	
 
-		filler( buffer, "file54", NULL, 0 );
-		filler( buffer, "file349", NULL, 0 );
-		filler(buffer, "test", NULL, 0);
-
-	}
-	else if (strcmp(path, "/test") == 0) {
-		filler(buffer, "test2", NULL, 0);
-	}
+	// if ( strcmp( path, "/" ) == 0 ) // If the user is trying to show the files/directories of the root directory show the following
+	// {
+	// 	filler( buffer, "file54", NULL, 0 );
+	// 	filler( buffer, "file349", NULL, 0 );
+	// 	filler(buffer, "test", NULL, 0);
+	//
+	// }
+	// else if (strcmp(path, "/test") == 0) {
+	// 	filler(buffer, "test2", NULL, 0);
+	// }
 
 	return 0;
 }
