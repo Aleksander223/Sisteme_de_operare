@@ -60,18 +60,6 @@ namespace proc {
         std::map<std::string, std::vector<std::string>> parentDict;// un PPid -> vector de Pid asociati lui
 
     public:
-        ProcessScraper() {
-            scrapeProcesses();
-
-            processThreads = new pthread_t[processNo];
-            processThreadsPaths = new struct Parameters[processNo];
-
-            processIndex = processNo - 1;
-            fileIndex = processNo - 1;
-            filesThreads = new pthread_t[processNo];
-            filesThreadsPaths = new struct Parameters[processNo];
-        }
-
         void scrapeProcesses() {
             std::string path = "/dev/kproc";
             std::ifstream stat(path);
@@ -84,7 +72,7 @@ namespace proc {
 
                 line  = line.substr(line.find(" ") + 1);
                 ppid = line.substr(0, line.find(" "));
-    
+
                 processStatus = line.substr(line.find(" ") + 1);;
 
                 procesess.insert(ppid);
@@ -96,9 +84,22 @@ namespace proc {
             }
 
             processNo = procesess.size();
-            std::cout<<"Iustin asta "<<processNo<<"\n";
-        
+
         }
+
+        ProcessScraper() {
+            scrapeProcesses();
+
+            processThreads = new pthread_t[processNo];
+            processThreadsPaths = new struct Parameters[processNo];
+
+            processIndex = processNo - 1;
+            fileIndex = processNo - 1;
+            filesThreads = new pthread_t[processNo];
+            filesThreadsPaths = new struct Parameters[processNo];
+        }
+
+
 
         int printProcesses() {
             //Procese grupate dupa PPid:
