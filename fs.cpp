@@ -17,6 +17,7 @@
 #include <time.h>
 #include <string.h>
 #include <stdlib.h>
+#include "proc.cpp"
 
 static int do_getattr( const char *path, struct stat *st )
 {
