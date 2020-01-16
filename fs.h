@@ -41,7 +41,11 @@ static int do_getattr( const char *path, struct stat *st )
 	if ( strcmp( path, "/" ) == 0 )
 	{
 		st->st_mode = S_IFDIR | 0755;
-		st->st_nlink = 2; // Why "two" hardlinks instead of "one"? The answer is here: http://unix.stackexchange.com/a/101536
+		st->st_nlink = 3; // Why "two" hardlinks instead of "one"? The answer is here: http://unix.stackexchange.com/a/101536
+	}
+	else if ( strcmp( path, "/test" ) == 0) {
+		st->st_mode = S_IFDIR | 0755;
+		st->st_nlink = 2;
 	}
 	else
 	{
@@ -64,6 +68,11 @@ static int do_readdir( const char *path, void *buffer, fuse_fill_dir_t filler, o
 	{
 		filler( buffer, "file54", NULL, 0 );
 		filler( buffer, "file349", NULL, 0 );
+		filler(buffer, "test", NULL, 0);
+
+	}
+	else if (strcmp(path, "test") == 0) {
+
 	}
 
 	return 0;
@@ -81,7 +90,7 @@ static int do_read( const char *path, char *buffer, size_t size, off_t offset, s
 
 	if ( strcmp( path, "/file54" ) == 0 )
 		selectedText = file54Text;
-	else if ( strcmp( path, "/file349" ) == 0 )
+	else if ( strcmp( path, "/test/file349" ) == 0 )
 		selectedText = file349Text;
 	else
 		return -1;
