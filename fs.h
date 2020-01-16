@@ -45,6 +45,10 @@ static int do_getattr( const char *path, struct stat *st )
 	}
 	else if ( strcmp( path, "/test" ) == 0) {
 		st->st_mode = S_IFDIR | 0755;
+		st->st_nlink = 3;
+	}
+	else if (strcmp (path, "/test/test2") ==0) {
+		st->st_mode = S_IFDIR | 0755;
 		st->st_nlink = 2;
 	}
 	else
@@ -71,8 +75,8 @@ static int do_readdir( const char *path, void *buffer, fuse_fill_dir_t filler, o
 		filler(buffer, "test", NULL, 0);
 
 	}
-	else if (strcmp(path, "test") == 0) {
-
+	else if (strcmp(path, "/test") == 0) {
+		filler(buffer, "test2", NULL, 0);
 	}
 
 	return 0;
