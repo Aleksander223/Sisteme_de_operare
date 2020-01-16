@@ -34,41 +34,34 @@ static int major;
 int kproc_print(void) {
     struct task_struct* tasks;
 
-    size_t nprocs = 0;
-
     for_each_process(tasks) {
-        // pr_info("== %s [%d]\n", tasks->comm, tasks->pid);
         char tmp[256];
         sprintf(tmp, "%d %d %s %li %llu %llu\n", tasks->pid, tasks->real_parent->pid, tasks->comm, tasks->state, tasks->utime, tasks->stime);
         strcat(procs, tmp);
-        ++nprocs;
     }
 
     return strlen(procs);
-
-    // printk("== Number of processes: %zu\n", nprocs);
 }
 
 static int __init kproc_init(void) {
     major = register_chrdev(0, DEVICE_NAME, &fops);
 
     if (major < 0) {
-        printk(KERN_ALERT "Kproc load failed\n");
+        printk(KERN_ALERT "KProc load failed\n");
         return major;
     }
 
-    printk("Init Kproc... %d\n", major);
+    printk("Init_KProc: %d\n", major);
 
     // kproc_print();
     return 0;
 }
 
 static void __exit kproc_exit(void) {
-    printk("EXit Kproc..\n");
+    printk("Exit_KProc\n");
 }
 
 static int dev_open(struct inode *inodep, struct file *filep) {
-    printk(KERN_INFO "Kproc opened\n");
     return 0;
 }
 
@@ -78,7 +71,6 @@ static ssize_t dev_write(struct file *filep, const char *buffer, size_t len, lof
 }
 
 static int dev_release(struct inode *inodep, struct file *filep) {
-    printk(KERN_INFO "Kproc closed\n");
     hasBeenRead = false;
     procs[0] = '\0';
     return 0;
