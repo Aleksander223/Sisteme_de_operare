@@ -9,6 +9,7 @@
  */
 
 #define FUSE_USE_VERSION 30
+#define UPDATE_INTERVAL 10000
 
 #include <fuse.h>
 #include <stdio.h>
@@ -19,10 +20,20 @@
 #include <stdlib.h>
 #include "proc.cpp"
 
+time_t lastUpdateTime = 0;
+
+
 static int do_getattr( const char *path, struct stat *st )
 {
 	printf( "[getattr] Called\n" );
 	printf( "\tAttributes of %s requested\n", path );
+
+	time_t currentTime = time(NULL);
+	if (currentTime > lastUpdateTime + UPDATE_INTERVAL) {
+		lastUpdateTime = currentTime;
+
+		proc::ps.scrapeProcesses();
+	}
 
 	// GNU's definitions of the attributes (http://www.gnu.org/software/libc/manual/html_node/Attribute-Meanings.html):
 	// 		st_uid: 	The user ID of the file’s owner.
