@@ -160,6 +160,6 @@ namespace proc {
         }
 
     };
-}
 
-proc::ProcessScraper ps;   /// obiect
+    proc::ProcessScraper ps;   /// obiect
+}
