@@ -1,9 +1,9 @@
 #include <iostream>
-#include <fuse.h>
 #include "proc.cpp"
+#include "fs.h"
 
-int main() {
-    proc::ProcessScraper ps;   /// obiect
-    ps.printProcesses();
-    return 0;
+int main(int argc, char* argv[]) {
+    // proc::ProcessScraper ps;   /// obiect
+    // ps.printProcesses();
+    return fuse_main( argc, argv,&operations, NULL);
 }
