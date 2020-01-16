@@ -94,7 +94,7 @@ static int do_read( const char *path, char *buffer, size_t size, off_t offset, s
 }
 
 static struct fuse_operations operations = {
-    .getattr	= do_getattr,
-    .read		= do_read,
-    .readdir	= do_readdir,
+    getattr: do_getattr,
+    read:		 do_read,
+    readdir: do_readdir,
 };
