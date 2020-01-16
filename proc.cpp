@@ -20,35 +20,35 @@ namespace proc {
         std::string status = " ";
     };
 
-    void* make_directory(void *argv){
-        Parameters *aux = (Parameters*)argv;
-        std::experimental::filesystem::path p(aux->path);
+    // void* make_directory(void *argv){
+    //     Parameters *aux = (Parameters*)argv;
+    //     std::experimental::filesystem::path p(aux->path);
 
-        while(!std::experimental::filesystem::exists(p.parent_path())){
-            //std::cout<<"Blocat\n";
-        };
+    //     while(!std::experimental::filesystem::exists(p.parent_path())){
+    //         //std::cout<<"Blocat\n";
+    //     };
 
-        std::experimental::filesystem::create_directory(aux->path);
-        return (void*)true;
-    }
+    //     std::experimental::filesystem::create_directory(aux->path);
+    //     return (void*)true;
+    // }
 
-    void* make_directories(void *argv){
-        Parameters *aux = (Parameters*)argv;
+    // void* make_directories(void *argv){
+    //     Parameters *aux = (Parameters*)argv;
 
-        std::experimental::filesystem::path p(aux->path);
+    //     std::experimental::filesystem::path p(aux->path);
 
-        while(!std::experimental::filesystem::exists(p.parent_path())){
-            ///std::cout<<"Blocat iar\n";
-        };
+    //     while(!std::experimental::filesystem::exists(p.parent_path())){
+    //         ///std::cout<<"Blocat iar\n";
+    //     };
 
-        std::ofstream fout(aux->path);
-        fout << "Statusul lui:\t" << aux->ppid << "\n\n\tStatus:\n" ;  // scriem in acel fisier
+    //     std::ofstream fout(aux->path);
+    //     fout << "Statusul lui:\t" << aux->ppid << "\n\n\tStatus:\n" ;  // scriem in acel fisier
 
-        fout << aux->status <<"\n";
+    //     fout << aux->status <<"\n";
 
-        fout.close();
-        return (void*)true;
-    }
+    //     fout.close();
+    //     return (void*)true;
+    // }
 
     class ProcessScraper {
     private:
@@ -114,23 +114,24 @@ namespace proc {
                }
             std::experimental::filesystem::remove_all("./bin/0");          // stergem tot ce era inainte
             std::experimental::filesystem::create_directory("./bin/0");    // cream radacina
-            createPSTree("0","./bin/0/");                                   // recursiv toti fii, nepotii etc
-            for(unsigned i = processNo - 1; i > processIndex; i--){
-                void *rez;
+            createPSTree("0","./bin/0/");    // recursiv toti fii, nepotii etc
+                                           
+            // for(unsigned i = processNo - 1; i > processIndex; i--){
+            //     void *rez;
 
-                if(pthread_join(processThreads[i], &rez)){
-                    perror(NULL);
-                    return errno;
-                }
-            }
-            for(unsigned i = processNo - 1; i > fileIndex; i--){
-                void *rez;
+            //     if(pthread_join(processThreads[i], &rez)){
+            //         perror(NULL);
+            //         return errno;
+            //     }
+            // }
+            // for(unsigned i = processNo - 1; i > fileIndex; i--){
+            //     void *rez;
 
-                if(pthread_join(filesThreads[i], &rez)){
-                    perror(NULL);
-                    return errno;
-                }
-            }
+            //     if(pthread_join(filesThreads[i], &rez)){
+            //         perror(NULL);
+            //         return errno;
+            //     }
+            // }
             return 0;
         }
 
@@ -139,23 +140,33 @@ namespace proc {
                 for (auto it: parentDict[ppid]) {
 
                     std::string new_path = current_path  + it;
-                    processThreadsPaths[processIndex].path = new_path;
-                    processThreadsPaths[processIndex].ppid = ppid;
+                    /// processThreadsPaths[processIndex].path = new_path;
+                    /// processThreadsPaths[processIndex].ppid = ppid;
 
-                    pthread_create(&processThreads[processIndex], NULL, make_directory, &processThreadsPaths[processIndex]);
+                    /// pthread_create(&processThreads[processIndex], NULL, make_directory, &processThreadsPaths[processIndex]);
+                    
+                    std::experimental::filesystem::create_directory(new_path);
+                    
                     new_path = new_path + "/";
-                    processIndex --;
+                    /// processIndex --;
                     createPSTree(it, new_path);
 
                 }
             else {
                 // nu il gaseste deci e frunza -> trebuie sa scriem in el un fisier status
 
-                filesThreadsPaths[fileIndex].path = current_path + "status.txt";
-                filesThreadsPaths[fileIndex].ppid = ppid;
-                filesThreadsPaths[fileIndex].status = childStatus[ppid];
-                pthread_create(&filesThreads[fileIndex], NULL, make_directories, &filesThreadsPaths[fileIndex]);
-                fileIndex --;
+                // filesThreadsPaths[fileIndex].path = current_path + "status.txt";
+                // filesThreadsPaths[fileIndex].ppid = ppid;
+                // filesThreadsPaths[fileIndex].status = childStatus[ppid];
+                // pthread_create(&filesThreads[fileIndex], NULL, make_directories, &filesThreadsPaths[fileIndex]);
+                // fileIndex --;
+
+                std::ofstream fout(current_path + "status.txt");
+                fout << "Statusul lui:\t" << ppid << "\n\n\tStatus:\n" ;  // scriem in acel fisier
+
+                fout << childStatus[ppid] <<"\n";
+
+                fout.close();
             }
         }
 
