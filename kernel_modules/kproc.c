@@ -39,7 +39,7 @@ int kproc_print(void) {
     for_each_process(tasks) {
         // pr_info("== %s [%d]\n", tasks->comm, tasks->pid);
         char tmp[256];
-        sprintf(tmp, "%d %d %s %li %d\n", tasks->pid, tasks->real_parent->pid, tasks->comm, tasks->state, tasks->tgid);
+        sprintf(tmp, "%d %d %s %li %llu %llu\n", tasks->pid, tasks->real_parent->pid, tasks->comm, tasks->state, tasks->utime, tasks->stime);
         strcat(procs, tmp);
         ++nprocs;
     }
