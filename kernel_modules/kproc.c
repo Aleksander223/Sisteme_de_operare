@@ -25,19 +25,28 @@ static struct file_operations fops = {
     .release = dev_release,
 };
 
+bool hasBeenRead = false;
+
+char procs[10000];
+
 static int major;
 
-void kproc_print(void) {
+int kproc_print(void) {
     struct task_struct* tasks;
 
     size_t nprocs = 0;
 
     for_each_process(tasks) {
-        pr_info("== %s [%d]\n", tasks->comm, tasks->pid);
+        // pr_info("== %s [%d]\n", tasks->comm, tasks->pid);
+        char tmp[256];
+        sprintf(tmp, "%d %d\n", tasks->pid, tasks->real_parent->pid);
+        strcat(procs, tmp);
         ++nprocs;
     }
 
-    printk("== Number of processes: %zu\n", nprocs);
+    return strlen(procs);
+
+    // printk("== Number of processes: %zu\n", nprocs);
 }
 
 static int __init kproc_init(void) {
@@ -50,7 +59,7 @@ static int __init kproc_init(void) {
 
     printk("Init Kproc... %d\n", major);
 
-    kproc_print();
+    // kproc_print();
     return 0;
 }
 
@@ -70,17 +79,26 @@ static ssize_t dev_write(struct file *filep, const char *buffer, size_t len, lof
 
 static int dev_release(struct inode *inodep, struct file *filep) {
     printk(KERN_INFO "Kproc closed\n");
+    hasBeenRead = false;
+    procs[0] = '\0';
     return 0;
 }
 
 static ssize_t dev_read(struct file *filep, char *buffer, size_t len, loff_t *offset) {
-    int errors = 0;
-    char *message = "Test";
-    int message_len = strlen(message);
+    if(!hasBeenRead) {
+        int errors = 0;
 
-    errors = copy_to_user(buffer, message, message_len);
+        int message_len = kproc_print();
 
-    return errors == 0 ? message_len : -EFAULT;
+        errors = copy_to_user(buffer, procs, message_len);
+
+        hasBeenRead = true;
+
+        return errors == 0 ? message_len : -EFAULT;
+    }
+
+    return 0;
+
 }
 
 module_init(kproc_init);
