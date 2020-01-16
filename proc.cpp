@@ -56,10 +56,12 @@ namespace proc {
         pthread_t *processThreads, *filesThreads;
         Parameters *filesThreadsPaths;
         Parameters *processThreadsPaths;
+
+
+    public:
         std::map<std::string, std::string> childStatus;
         std::map<std::string, std::vector<std::string>> parentDict;// un PPid -> vector de Pid asociati lui
 
-    public:
         void scrapeProcesses() {
             std::string path = "/dev/kproc";
             std::ifstream stat(path);
@@ -159,3 +161,5 @@ namespace proc {
 
     };
 }
+
+proc::ProcessScraper ps;   /// obiect
