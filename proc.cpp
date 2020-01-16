@@ -172,5 +172,5 @@ namespace proc {
 
     };
 
-    proc::ProcessScraper ps;   /// obiect
+    ProcessScraper ps;   /// obiect
 }
