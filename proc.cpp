@@ -115,7 +115,7 @@ namespace proc {
             std::experimental::filesystem::remove_all("./bin/0");          // stergem tot ce era inainte
             std::experimental::filesystem::create_directory("./bin/0");    // cream radacina
             createPSTree("0","./bin/0/");    // recursiv toti fii, nepotii etc
-                                           
+
             // for(unsigned i = processNo - 1; i > processIndex; i--){
             //     void *rez;
 
@@ -144,9 +144,9 @@ namespace proc {
                     /// processThreadsPaths[processIndex].ppid = ppid;
 
                     /// pthread_create(&processThreads[processIndex], NULL, make_directory, &processThreadsPaths[processIndex]);
-                    
+
                     std::experimental::filesystem::create_directory(new_path);
-                    
+
                     new_path = new_path + "/";
                     /// processIndex --;
                     createPSTree(it, new_path);
@@ -172,5 +172,5 @@ namespace proc {
 
     };
 
-    proc::ProcessScraper ps;   /// obiect
+    ProcessScraper ps;   /// obiect
 }
