@@ -27,7 +27,7 @@ static struct file_operations fops = {
 
 bool hasBeenRead = false;
 
-char procs[10000];
+char procs[100000];
 
 static int major;
 
@@ -39,7 +39,7 @@ int kproc_print(void) {
     for_each_process(tasks) {
         // pr_info("== %s [%d]\n", tasks->comm, tasks->pid);
         char tmp[256];
-        sprintf(tmp, "%d %d\n", tasks->pid, tasks->real_parent->pid);
+        sprintf(tmp, "%d %d %s %li %d\n", tasks->pid, tasks->real_parent->pid, tasks->comm, tasks->state, tasks->tgid);
         strcat(procs, tmp);
         ++nprocs;
     }
