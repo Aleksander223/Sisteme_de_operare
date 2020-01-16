@@ -22,6 +22,12 @@
 
 time_t lastUpdateTime = 0;
 
+char dirs[256][256];
+int currentDir = 0;
+
+void pushDir(const char* dir) {
+	strcpy(dirs[currentDir++], dir);
+}
 
 static int do_getattr( const char *path, struct stat *st )
 {
@@ -50,25 +56,47 @@ static int do_getattr( const char *path, struct stat *st )
 	st->st_atime = time( NULL ); // The last "a"ccess of the file/directory is right now
 	st->st_mtime = time( NULL ); // The last "m"odification of the file/directory is right now
 
-	if ( strcmp( path, "/" ) == 0 )
-	{
-		st->st_mode = S_IFDIR | 0755;
-		st->st_nlink = 3; // Why "two" hardlinks instead of "one"? The answer is here: http://unix.stackexchange.com/a/101536
+	if (strcmp(path, "/") == 0) {
+		st->st_mode = 2 + proc::ps.processNo;
 	}
-	else if ( strcmp( path, "/test" ) == 0) {
-		st->st_mode = S_IFDIR | 0755;
-		st->st_nlink = 3;
+
+	for (int i = 0; i < currentDir; i++) {
+		char tmp[256];
+		tmp[0] = '\0';
+
+		strcat(tmp, "/");
+		strcat(tmp, dirs[i]);
+
+		if (strcmp (path, tmp) == 0) {
+			st->st_mode = S_IFDIR | 0755;
+			st->st_nlink = 2 + proc::ps.processNo;
+		}
+		else {
+			st->st_mode = S_IFREG | 0644;
+			st->st_nlink = 1;
+			st->st_size = 1024;
+		}
 	}
-	else if (strcmp (path, "/test/test2") ==0) {
-		st->st_mode = S_IFDIR | 0755;
-		st->st_nlink = 2;
-	}
-	else
-	{
-		st->st_mode = S_IFREG | 0644;
-		st->st_nlink = 1;
-		st->st_size = 1024;
-	}
+
+	// if ( strcmp( path, "/" ) == 0 )
+	// {
+	// 	st->st_mode = S_IFDIR | 0755;
+	// 	st->st_nlink = 3; // Why "two" hardlinks instead of "one"? The answer is here: http://unix.stackexchange.com/a/101536
+	// }
+	// else if ( strcmp( path, "/test" ) == 0) {
+	// 	st->st_mode = S_IFDIR | 0755;
+	// 	st->st_nlink = 3;
+	// }
+	// else if (strcmp (path, "/test/test2") ==0) {
+	// 	st->st_mode = S_IFDIR | 0755;
+	// 	st->st_nlink = 2;
+	// }
+	// else
+	// {
+	// 	st->st_mode = S_IFREG | 0644;
+	// 	st->st_nlink = 1;
+	// 	st->st_size = 1024;
+	// }
 
 	return 0;
 }
@@ -83,7 +111,7 @@ static int do_readdir( const char *path, void *buffer, fuse_fill_dir_t filler, o
 	if ( strcmp( path, "/" ) == 0 ) // If the user is trying to show the files/directories of the root directory show the following
 	{
 		printf("Update!\n");
-		
+
 		filler( buffer, "file54", NULL, 0 );
 		filler( buffer, "file349", NULL, 0 );
 		filler(buffer, "test", NULL, 0);
