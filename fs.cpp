@@ -57,7 +57,7 @@ static int do_getattr( const char *path, struct stat *st )
 	st->st_mtime = time( NULL ); // The last "m"odification of the file/directory is right now
 
 	if (strcmp(path, "/") == 0) {
-		st->st_mode = 2 + proc::ps.processNo;
+		st->st_mode = 2 + proc::ps.getProcessNo();
 	}
 
 	for (int i = 0; i < currentDir; i++) {
