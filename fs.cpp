@@ -69,7 +69,7 @@ static int do_getattr( const char *path, struct stat *st )
 
 		if (strcmp (path, tmp) == 0) {
 			st->st_mode = S_IFDIR | 0755;
-			st->st_nlink = 2 + proc::ps.processNo;
+			st->st_nlink = 2 + proc::ps.getProcessNo();
 		}
 		else {
 			st->st_mode = S_IFREG | 0644;
